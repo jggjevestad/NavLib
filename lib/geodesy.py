@@ -244,14 +244,14 @@ def geod2TMgrid(a, b, lat, lon, lat0, lon0, scale, fnorth, feast):
     N = Nrad(a, b, lat)
     e2 = (a**2 - b**2)/a**2
     eps2 = e2/(1 - e2)*cos(lat)**2
-    l = lon - lon0
+    dlon = lon - lon0
 
-    x = B + 1/2*l**2*N*sin(lat)*cos(lat) \
-        + 1/24*l**4*N*sin(lat)*cos(lat)**3*(5 - tan(lat)**2 + 9*eps2 + 4*eps2**2) \
-        + 1/720*l**6*N*sin(lat)*cos(lat)**5*(61 - 58*tan(lat)**2 + tan(lat)**4)
+    x = B + 1/2*dlon**2*N*sin(lat)*cos(lat) \
+        + 1/24*dlon**4*N*sin(lat)*cos(lat)**3*(5 - tan(lat)**2 + 9*eps2 + 4*eps2**2) \
+        + 1/720*dlon**6*N*sin(lat)*cos(lat)**5*(61 - 58*tan(lat)**2 + tan(lat)**4)
 
-    y = l*N*cos(lat) + 1/6*l**3*N*cos(lat)**3*(1 - tan(lat)**2 + eps2) \
-        + 1/120*l**5*N*cos(lat)**5*(5 - 18*tan(lat)**2 + tan(lat)**4)
+    y = dlon*N*cos(lat) + 1/6*dlon**3*N*cos(lat)**3*(1 - tan(lat)**2 + eps2) \
+        + 1/120*dlon**5*N*cos(lat)**5*(5 - 18*tan(lat)**2 + tan(lat)**4)
 
     north = x*scale
     east = y*scale
@@ -282,10 +282,10 @@ def TMgrid2geod(a, b, north, east, lat0, lon0, scale, fnorth, feast):
           + 1/24*y**4*tan(latf)/(Mf*Nf**3)*(5 + 3*tan(latf)**2 + eps2f - 9*eps2f*tan(latf)**2 - 4*eps2f**2) \
           - 1/720*y**6*tan(latf)/(Mf*Nf**5)*(61 + 90*tan(latf)**2 + 45*tan(latf)**4)
 
-    l = y/(Nf*cos(latf)) \
-        - 1/6*y**3/(Nf**3*cos(latf))*(1 + 2*tan(latf)**2 + eps2f) \
-        + 1/120*y**5/(Nf**5*cos(latf))*(5 + 28*tan(latf)**2 + 24*tan(latf)**4)
+    dlon = y/(Nf*cos(latf)) \
+           - 1/6*y**3/(Nf**3*cos(latf))*(1 + 2*tan(latf)**2 + eps2f) \
+           + 1/120*y**5/(Nf**5*cos(latf))*(5 + 28*tan(latf)**2 + 24*tan(latf)**4)
 
-    lon = l + lon0
+    lon = dlon + lon0
 
     return lat, lon
