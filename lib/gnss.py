@@ -42,7 +42,7 @@ def satpos(ttr, toe, ROOTa, DELTAn, M0, e, omega, Cus, Cuc, Crs, Crc, Cis, Cic, 
     # Argument of latitude
     PHI = v + omega
 
-    # Second harmonic pertubations
+    # Second harmonic perturbations
     du = Cus*sin(2*PHI) + Cuc*cos(2*PHI)  # Argument of latitude correction [rad]
     dr = Crs*sin(2*PHI) + Crc*cos(2*PHI)  # Radius correction [m]
     di = Cis*sin(2*PHI) + Cic*cos(2*PHI)  # Inclination correction[rad]
@@ -61,3 +61,63 @@ def satpos(ttr, toe, ROOTa, DELTAn, M0, e, omega, Cus, Cuc, Crs, Crc, Cis, Cic, 
                  [r*sin(u)*sin(i)]])
 
     return Xs0
+
+
+# Example
+if __name__ == '__main__':
+
+    # Import libraries
+    from numpy.linalg import norm
+    from lib.constants import c
+    from lib.rotation import Rz
+
+    # Approximate receiver position [m]
+    Xr = array([[3172870.7170],
+                [604208.2810],
+                [5481574.2300]])
+
+    # Satellite G01 broadcast ephemerides (RINEX)
+    ttr = 8134  # [s]
+    toe = 7200  # [s]
+    ROOTa = 5.153634706497e+03  # [sqrt(m)]
+    DELTAn = 4.646979279625e-09  # [rad/s]
+    M0 = 9.760178388778e-01  # [rad]
+    e = 9.364774916321e-03  # [unitless]
+    omega = 7.546597134633e-01  # [rad]
+    Cus = 1.266598701477e-07  # [rad]
+    Cuc = -2.680346369743e-06  # [rad]
+    Crs = -5.456250000000e+01  # [m]
+    Crc = 3.865625000000e+02  # [m]
+    Cis = 1.285225152969e-07  # [rad]
+    Cic = -8.940696716309e-08  # [rad]
+    i0 = 9.785394956406e-01  # [rad]
+    iDOT = -3.500145795122e-10  # [rad/s]
+    OMEGA0 = -1.328259931335e+00  # [rad]
+    OMEGADOT = -8.668218208939e-09  # [rad/s]
+
+    # Satellite ECEF position @ 02:15:34 [m]
+    Xs0 = satpos(ttr, toe, ROOTa, DELTAn, M0, e, omega,
+                 Cus, Cuc, Crs, Crc, Cis, Cic, i0, iDOT, OMEGA0, OMEGADOT)
+    print(Xs0)
+
+    # Estimate of signal delay
+    sd_new = norm(Xs0 - Xr)/c
+    sd = 0
+
+    # Estimate signal travel time due to earth rotation
+    Xs = None
+    while abs(sd_new - sd) > 1e-10:
+        sd = sd_new
+        Xs = Rz(-OMEGADOTe*sd)@Xs0
+
+        # Compute delay estimate
+        sd_new = norm(Xs - Xr)/c
+
+    # Estimate of signal delay [ms]
+    print(norm(Xs - Xr)/c*1e3)
+
+    # Corrected satellite ECEF position @ 02:15:34 [m]
+    print(Xs)
+
+    # Change in satellite position due to earth rotation [m]
+    print(norm(Xs - Xs0))

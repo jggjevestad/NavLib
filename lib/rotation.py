@@ -1,5 +1,6 @@
 # Import libraries
 from numpy import array, eye, vstack, sin, cos, sqrt, arcsin, arctan2, pi, trace
+from lib.convert import deg2rad, rad2deg
 from numpy.linalg import norm
 
 
@@ -152,3 +153,96 @@ nwu2enu = array([[0, -1, 0],
 nwu2ned = array([[1, 0, 0],
                  [0, -1, 0],
                  [0, 0, -1]])
+
+
+# Example
+if __name__ == '__main__':
+
+    # Euler angles
+    my_roll = deg2rad(10.0)
+    my_pitch = deg2rad(20.0)
+    my_yaw = deg2rad(30.0)
+
+    # Euler to DCM
+    my_C = euler2dcm(my_roll, my_pitch, my_yaw)
+    print("euler2dcm:")
+    print(my_C, norm(my_C, 2))
+
+    # DCM to euler
+    my_roll, my_pitch, my_yaw = dcm2euler(my_C)
+    print("dcm2euler:")
+    print(rad2deg(my_roll), rad2deg(my_pitch), rad2deg(my_yaw))
+
+    # Euler to quaternion
+    my_q = euler2quat(my_roll, my_pitch, my_yaw)
+    print("euler2quat:")
+    print(my_q, norm(my_q, 2))
+
+    # Quaternion to euler
+    my_roll, my_pitch, my_yaw = quat2euler(my_q)
+    print("quat2euler:")
+    print(rad2deg(my_roll), rad2deg(my_pitch), rad2deg(my_yaw))
+
+    # DCM to axis_angle
+    my_theta, my_r = dcm2axis_ang(my_C)
+    print("DCM2axis_ang:")
+    print(my_theta, my_r.T)
+
+    # Axis_angle to DCM
+    C1 = axis_ang2dcm(my_theta, my_r)
+    print("axis_ang2DCM:")
+    print(my_C, norm(my_C, 2))
+
+    # DCM to quaternion
+    my_q = dcm2quat(my_C)
+    print("dcm2quat:")
+    print(my_q, norm(my_q, 2))
+
+    # Quaternion to DCM
+    my_C = quat2dcm(my_q)
+    print("quat2dcm:")
+    print(my_C, norm(my_C, 2))
+
+    # Rotation by quaternions (full example)
+
+    # Rotation angle
+    my_theta = deg2rad(30)
+
+    # Rotation axis (normalized)
+    my_r = array([[0],
+                  [0],
+                  [1]])
+
+    # Point
+    p1 = array([[1],
+                [0],
+                [0]])
+
+    # Point (quaternion representation)
+    p1q = vstack([0,
+                  p1])
+    print("Point p1:")
+    print(p1q, norm(p1q, 2))
+
+    # Define rotation quaternion
+    my_q = vstack([cos(my_theta/2),
+                   sin(my_theta/2)*my_r])
+    print("Rotation quaternion:")
+    print(my_q, norm(my_q, 2))
+
+    # Rotate p1 to p2
+    p2q = qmult(qmult(my_q, p1q), qinv(my_q))
+    print("Point p2:")
+    print(p2q, norm(p2q, 2))
+
+    # Corresponding dcm rotation
+
+    # Quaternion to dcm
+    my_C = quat2dcm(my_q)
+    print("quat2dcm:")
+    print(my_C, norm(my_C, 2))
+
+    # Rotate p1 to p2
+    p2 = my_C@p1
+    print("Point p2:")
+    print(p2, norm(p2, 2))

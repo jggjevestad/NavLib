@@ -51,11 +51,11 @@ def dms2deg(dms):
 # Convert from degree to degree, minutes, seconds
 def deg2dms(deg):
     frac = abs(deg - int(deg))
-    d = fix(deg)
+    d = int(fix(deg))
     dmin = frac*60
 
     frac = abs(dmin - int(dmin))
-    m = fix(dmin)
+    m = int(fix(dmin))
     s = frac*60
     return d, m, s
 
@@ -72,3 +72,16 @@ def rad2dms(rad):
     deg = rad2deg(rad)
     dms = deg2dms(deg)
     return dms
+
+
+# Example
+if __name__ == '__main__':
+
+    dms = (56, 28, 43)
+    print(dms)
+
+    deg = dms2deg(dms)
+    print(deg)
+
+    dms = deg2dms(deg)
+    print(dms)

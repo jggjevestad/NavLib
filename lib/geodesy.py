@@ -23,8 +23,7 @@ def Rm(a, b, lat):
     M = Mrad(a, b, lat)
     N = Nrad(a, b, lat)
 
-    R = sqrt(M*N)
-    return R
+    return sqrt(M*N)
 
 
 # Radius of curvature for given azimuth (Euler's equation)
@@ -32,8 +31,7 @@ def Ra(a, b, lat, az):
     M = Mrad(a, b, lat)
     N = Nrad(a, b, lat)
 
-    R = M*N/(M*sin(az)**2 + N*cos(az)**2)
-    return R
+    return M*N/(M*sin(az)**2 + N*cos(az)**2)
 
 
 # Meridional arc distance
@@ -289,3 +287,72 @@ def TMgrid2geod(a, b, north, east, lat0, lon0, scale, fnorth, feast):
     lon = dlon + lon0
 
     return lat, lon
+
+
+# Example
+if __name__ == '__main__':
+
+    # Import libraries
+    from lib.convert import deg2rad, rad2dms, dms2rad
+    from lib.rotation import Rx, Ry, Rz
+
+    # Given coordinates EU89
+    N_EU89 = 6615663.888
+    E_EU89 = 600113.253
+    h_EU89 = 156.228
+    print(N_EU89, E_EU89, h_EU89)
+
+    # GRS80 ellipsoid
+    a_GRS80 = 6378137
+    f_GRS80 = 1/298.257222101
+    b_GRS80 = a_GRS80*(1 - f_GRS80)
+
+    # UTM projection
+    lat0_EU89 = 0
+    lon0_EU89 = deg2rad(9)  # zone 32V
+    scale_EU89 = 0.9996
+    fnorth_EU89 = 0
+    feast_EU89 = 500000
+
+    # Convert from projection to geodetic
+    lat_EU89, lon_EU89 = TMgrid2geod(a_GRS80, b_GRS80, N_EU89, E_EU89,
+                                     lat0_EU89, lon0_EU89, scale_EU89, fnorth_EU89, feast_EU89)
+    print(rad2dms(lat_EU89), rad2dms(lon_EU89), h_EU89)
+
+    # Convert from geodetic to ECEF
+    P_EU89 = geod2ECEF(a_GRS80, b_GRS80, lat_EU89, lon_EU89, h_EU89)
+
+    # Parameters 7-parameter transformation (NMBU campus)
+    T = array([[-313.368],
+               [125.818],
+               [-626.643]])
+
+    m = (1 + 7.781959e-6)
+
+    rx = dms2rad((0, 0, -2.336248))
+    ry = dms2rad((0, 0, -1.712020))
+    rz = dms2rad((0, 0, 1.169871))
+    R = Rx(rx)@Ry(ry)@Rz(rz)
+
+    P_NGO = T + m*R@P_EU89
+
+    # Modified Bessel ellipsoid
+    a_bess = 6377492.0176
+    f_bess = 1/299.15281285
+    b_bess = a_bess*(1 - f_bess)
+
+    # TM projection
+    lat0_NGO = deg2rad(58)
+    lon0_NGO = dms2rad((10, 43, 22.5))  # axis 3
+    scale_NGO = 1
+    fnorth_NGO = 0
+    feast_NGO = 0
+
+    # Convert from ECEF to geodetic
+    lat_NGO, lon_NGO, h_NGO = ECEF2geod(a_bess, b_bess, P_NGO)
+    print(rad2dms(lat_NGO), rad2dms(lon_NGO), h_NGO)
+
+    # Convert from geodetic to projection (NGO48)
+    x_NGO, y_NGO = geod2TMgrid(a_bess, b_bess, lat_NGO, lon_NGO,
+                               lat0_NGO, lon0_NGO, scale_NGO, fnorth_NGO, feast_NGO)
+    print(x_NGO, y_NGO, h_NGO)
