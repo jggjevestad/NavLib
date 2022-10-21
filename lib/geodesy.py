@@ -182,11 +182,6 @@ def geod1(a, b, lat1, lon1, az1, d):
 
 # Geodetic indirect problem
 def geod2(a, b, lat1, lon1, lat2, lon2):
-    az0 = None
-    az1 = None
-    sigma = None
-    sigma1 = None
-    sigma2 = None
 
     f = (a - b)/a
     e2m = (a**2 - b**2)/b**2
@@ -214,8 +209,8 @@ def geod2(a, b, lat1, lon1, lat2, lon2):
 
         K = (f + f**2)/4*cos(az0)**2 - f**2/4*cos(az0)**4
 
-        dlon_new = dlon + f*sin(az0)*((1 - K - K**2)*sigma + K*sin(sigma)*cos(sigma1 + sigma2)
-                                      + K**2*sin(sigma)*cos(sigma)*cos(2*(sigma1 + sigma2)))
+        dlon_new = (lon2 - lon1) + f*sin(az0)*((1 - K - K**2)*sigma + K*sin(sigma)*cos(sigma1 + sigma2)
+                                               + K**2*sin(sigma)*cos(sigma)*cos(2*(sigma1 + sigma2)))
 
     dlon = dlon_new
     az2 = arctanc(cos(beta1)*sin(dlon), (cos(beta1)*sin(beta2)*cos(dlon) - sin(beta1)*cos(beta2)))
