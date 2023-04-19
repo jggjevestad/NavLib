@@ -284,6 +284,34 @@ def TMgrid2geod(a, b, north, east, lat0, lon0, scale, fnorth, feast):
     return lat, lon
 
 
+# Transversal Mercator distance and azimuth correction
+def TMcorr(a, b, x1, y1, x2, y2, lat0):
+    latf = footlat(a, b, (x1 + x2)/2, lat0)
+
+    s = sqrt((x2 - x1)**2 + (y2 - y1)**2)
+    az = arctanc(y2 - y1, x2 - x1)
+    R = Ra(a, b, latf, az)
+
+    daz = -(x2 - x1)/(6*R**2)*(2*y1 + y2)
+    ds = s/(6*R**2)*(y1**2 + y1*y2 + y2**2)
+
+    return daz, ds
+
+
+# Transversal Mercator meridian convergence
+def TMconv(a, b, x, y, lat0):
+    latf = footlat(a, b, x, lat0)
+
+    e2 = (a**2 - b**2)/a**2
+    Nf = Nrad(a, b, latf)
+    ef2 = e2/(1 - e2)*cos(latf)**2
+
+    gamma = y*tan(latf)/Nf \
+            -y**3*tan(latf)/(3*Nf**3)*(1 + tan(latf)**2 - ef2 - 2*ef2**2)
+
+    return gamma
+
+
 # Example
 if __name__ == '__main__':
 

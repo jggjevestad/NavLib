@@ -8,21 +8,21 @@ from numpy.linalg import norm
 # x-axis rotation
 def Rx(rx):
     return array([[1, 0, 0],
-                  [0, cos(rx), -sin(rx)],
-                  [0, sin(rx), cos(rx)]])
+                  [0, cos(rx), sin(rx)],
+                  [0, -sin(rx), cos(rx)]])
 
 
 # y-axis rotation
 def Ry(ry):
-    return array([[cos(ry), 0, sin(ry)],
+    return array([[cos(ry), 0, -sin(ry)],
                   [0, 1, 0],
-                  [-sin(ry), 0, cos(ry)]])
+                  [sin(ry), 0, cos(ry)]])
 
 
 # z-axis rotation
 def Rz(rz):
-    return array([[cos(rz), -sin(rz), 0],
-                  [sin(rz), cos(rz), 0],
+    return array([[cos(rz), sin(rz), 0],
+                  [-sin(rz), cos(rz), 0],
                   [0, 0, 1]])
 
 
