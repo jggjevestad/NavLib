@@ -1,7 +1,7 @@
 # Import libraries
 from numpy import array, pi, sin, arcsin, cos, tan, arctan, sqrt
-from lib.convert import arctanc
-from lib.rotation import Ce_g
+from convert import arctanc
+from rotation import Ce_g
 
 
 # Meridional radius of curvature
@@ -316,8 +316,8 @@ def TMconv(a, b, x, y, lat0):
 if __name__ == '__main__':
 
     # Import libraries
-    from lib.convert import deg2rad, rad2dms, dms2rad
-    from lib.rotation import Rx, Ry, Rz
+    from convert import deg2rad, rad2dms, dms2rad
+    from rotation import Rx, Ry, Rz
 
     # Given coordinates EU89
     N_EU89 = 6615663.888
