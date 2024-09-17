@@ -206,8 +206,8 @@ def geod2(a, b, lat1, lon1, lat2, lon2):
         dlon = dlon_new
 
         X = cos(beta1) * sin(beta2) - sin(beta1) * cos(beta2) * cos(dlon)
-        Y = cos(beta2)*sin(dlon)
-        Z = sin(beta1)*sin(beta2) + cos(beta1)*cos(beta2)*cos(dlon)
+        Y = cos(beta2) * sin(dlon)
+        Z = sin(beta1) * sin(beta2) + cos(beta1) * cos(beta2) * cos(dlon)
 
         sigma = arctan(sqrt(X**2 + Y**2)/Z)
         az1 = arctanc(Y, X)
@@ -216,7 +216,7 @@ def geod2(a, b, lat1, lon1, lat2, lon2):
         sigma1 = arctan(tan(beta1)/cos(az1))
         sigma2 = sigma1 + sigma
 
-        K = (f + f**2)/4*cos(az0)**2 - f**2/4*cos(az0)**4
+        K = (f + f**2)/4 * cos(az0)**2 - f**2/4 * cos(az0)**4
 
         dlon_new = (lon2 - lon1) + f * sin(az0) * ((1 - K - K**2) * sigma + K * sin(sigma) * cos(sigma1 + sigma2)
                                                + K**2*sin(sigma)*cos(sigma)*cos(2*(sigma1 + sigma2)))
