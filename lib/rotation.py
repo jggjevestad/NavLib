@@ -28,9 +28,9 @@ def Rz(rz):
 
 # dcm2euler
 def dcm2euler(C):
-    roll = arctan2(C[2, 1], C[2, 2])
-    pitch = arctan2(-C[2, 0], sqrt(C[2, 1]**2 + C[2, 2]**2))
-    yaw = arctan2(C[1, 0], C[0, 0])
+    roll = arctan2(-C[2, 1], C[2, 2])
+    pitch = arctan2(C[2, 0], sqrt(C[2, 1]**2 + C[2, 2]**2))
+    yaw = arctan2(-C[1, 0], C[0, 0])
     return roll, pitch, yaw
 
 
