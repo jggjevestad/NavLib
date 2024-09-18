@@ -64,7 +64,7 @@ def deg2dms(deg: float) -> Tuple[int, int, float]:
     frac = abs(dmin - int(dmin))
     m = int(fix(dmin))
     s = frac * 60
-    return f"{d:3d}°{m:02d}′{s:08.5f}″"
+    return d, m, s
 
 
 # Convert from degree, minutes, seconds to radian
