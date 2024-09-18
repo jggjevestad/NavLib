@@ -355,7 +355,7 @@ if __name__ == '__main__':
                                      lat0_EU89, lon0_EU89, scale_EU89, fnorth_EU89, feast_EU89)
     lat = rad2dms(lat_EU89)
     lon = rad2dms(lon_EU89)
-    print(f"{lat[0]:3d}°{lat[1]:02d}′{lat[2]:08.5f}″, {lon[0]:3d}°{lon[1]:02d}′{lon[2]:08.5f}″, {h_EU89:.3f}m")
+    print(f"{lat[0]:3d}°{lat[1]:02d}'{lat[2]:08.5f}\"N, {lon[0]:3d}°{lon[1]:02d}'{lon[2]:08.5f}\"E, {h_EU89:.3f}m")
 
     # Convert from geodetic to ECEF
     P_EU89 = geod2ECEF(a_GRS80, b_GRS80, lat_EU89, lon_EU89, h_EU89)
@@ -390,7 +390,7 @@ if __name__ == '__main__':
     lat_NGO, lon_NGO, h_NGO = ECEF2geod(a_bess, b_bess, P_NGO)
     lat = rad2dms(lat_NGO)
     lon = rad2dms(lon_NGO)
-    print(f"{lat[0]:3d}°{lat[1]:02d}′{lat[2]:08.5f}″, {lon[0]:3d}°{lon[1]:02d}′{lon[2]:08.5f}″, {h_NGO:.3f}m")
+    print(f"{lat[0]:3d}°{lat[1]:02d}'{lat[2]:08.5f}\", {lon[0]:3d}°{lon[1]:02d}'{lon[2]:08.5f}\", {h_NGO:.3f}m")
 
     # Convert from geodetic to projection (NGO48)
     x_NGO, y_NGO = geod2TMgrid(a_bess, b_bess, lat_NGO, lon_NGO,
