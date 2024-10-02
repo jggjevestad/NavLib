@@ -135,12 +135,6 @@ def acc2euler(ax, ay, az):
     return roll, pitch
 
 
-# Corrected atan2
-def arctanc(y, x):
-    z = arctan2(y, x)
-    return (2*pi + z) % 2*pi
-
-
 # Coordinate axis definitions
 ned2enu = array([[0, 1, 0],
                  [1, 0, 0],
@@ -156,8 +150,7 @@ nwu2ned = array([[1, 0, 0],
 
 
 # Example
-if __name__ == '__main__':
-
+def main():
     # Euler angles
     my_roll = deg2rad(10.0)
     my_pitch = deg2rad(20.0)
@@ -246,3 +239,7 @@ if __name__ == '__main__':
     p2 = my_C@p1
     print("Point p2:")
     print(p2, norm(p2, 2))
+
+
+if __name__ == '__main__':
+    main()

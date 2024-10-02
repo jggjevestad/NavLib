@@ -1,7 +1,7 @@
 # Import libraries
 from numpy import array, pi, sin, arcsin, cos, tan, arctan, sqrt
 from convert import arctanc
-from rotation import Ce_g
+from rotation import Ce_g, ned2enu
 
 
 # Meridional radius of curvature
@@ -62,32 +62,22 @@ def footlat(a, b, x, lat0):
     return latf
 
 
-# Convert from ECEF coordinates to enu coordinates
-def ECEF2enu(lat0, lon0, dX, dY, dZ):
-    """Convert from ECEF coordinates to ENU coordinates."""
-    dP = Ce_g(lat0, lon0) @ array([[dX], 
-                                   [dY], 
-                                   [dZ]])
-    
-    # Convert from NED to ENU
-    e = dP[1]
-    n = dP[0]
-    u = -dP[2]
-    return e, n, u
-
-
 # Convert from ECEF coordinates to ned coordinates
 def ECEF2ned(lat0, lon0, dX, dY, dZ):
     """Convert from ECEF coordinates to NED coordinates."""
     dP = Ce_g(lat0, lon0) @ array([[dX], 
                                    [dY], 
                                    [dZ]])
-    
-    # Convert from ENU to NED
-    n = dP[0]
-    e = dP[1]
-    d = dP[2]
-    return n, e, d
+    return dP.flatten()
+
+
+# Convert from ECEF coordinates to enu coordinates
+def ECEF2enu(lat0, lon0, dX, dY, dZ):
+    """Convert from ECEF coordinates to ENU coordinates."""
+    dP = ned2enu @ Ce_g(lat0, lon0) @ array([[dX], 
+                                             [dY], 
+                                             [dZ]])
+    return dP.flatten()
 
 
 # Convert geodetic coordinates to ECEF coordinates
@@ -392,9 +382,7 @@ def main():
     R = Rx(rx)@Ry(ry)@Rz(rz)
 
     P_EU89 = T + m*R@P_EU89
-    X_EU89 = P_EU89[0, 0]
-    Y_EU89 = P_EU89[1, 0]
-    Z_EU89 = P_EU89[2, 0]
+    X_EU89, Y_EU89, Z_EU89 = P_EU89.flatten()
 
     # Modified Bessel ellipsoid
     a_bess = 6377492.0176
@@ -421,3 +409,4 @@ def main():
 
 if __name__ == '__main__':
     main()  # Call the main function
+    
