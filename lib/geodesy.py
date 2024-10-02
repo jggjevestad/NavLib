@@ -120,6 +120,21 @@ def ECEF2geod(a, b, P):
     return lat, lon, h
 
 
+# Convert ECEF coordinates to geodetic coordinates (Bowring, 1976)
+def ECEF2geodb(a, b, X, Y, Z):
+    """Convert ECEF coordinates to geodetic coordinates (Bowring, 1976)."""
+    e2 = (a**2 - b**2) / a**2
+    e2m = (a**2 - b**2) / b**2
+    rho = sqrt(X**2 + Y**2)
+    mu = arctan(Z * a / (rho * b))
+
+    lat = arctan((Z + e2m * b * sin(mu)**3) / (rho - e2 * a * cos(mu)**3))
+    lon = arctan(Y / X)
+    h = rho * cos(lat) + Z * sin(lat) - Nrad(a, b, lat) * (1 - e2 * sin(lat)**2)
+
+    return lat, lon, h
+
+
 # Convert ECEF coordinates to geodetic coordinates (Vermeille, 2004)
 def ECEF2geodv(a, b, P):
     """Convert ECEF coordinates to geodetic coordinates (Vermeille, 2004)."""
@@ -326,8 +341,7 @@ def TMconv(a, b, x, y, lat0):
 
 
 # Example
-if __name__ == '__main__':
-
+def main():
     # Import libraries
     from convert import deg2rad, rad2dms, dms2rad
     from rotation import Rx, Ry, Rz
@@ -378,7 +392,6 @@ if __name__ == '__main__':
     a_bess = 6377492.0176
     f_bess = 1/299.15281285
     b_bess = a_bess*(1 - f_bess)
-
     # TM projection
     lat0_NGO = deg2rad(58)
     lon0_NGO = dms2rad((10, 43, 22.5))  # axis 3
@@ -390,9 +403,13 @@ if __name__ == '__main__':
     lat_NGO, lon_NGO, h_NGO = ECEF2geod(a_bess, b_bess, P_NGO)
     lat = rad2dms(lat_NGO)
     lon = rad2dms(lon_NGO)
-    print(f"{lat[0]:3d}°{lat[1]:02d}'{lat[2]:08.5f}\", {lon[0]:3d}°{lon[1]:02d}'{lon[2]:08.5f}\", {h_NGO:.3f}m")
+    print(f"{lat[0]:3d}°{lat[1]:02d}'{lat[2]:08.5f}\"N, {lon[0]:3d}°{lon[1]:02d}'{lon[2]:08.5f}\"E, {h_NGO:.3f}m")
 
     # Convert from geodetic to projection (NGO48)
     x_NGO, y_NGO = geod2TMgrid(a_bess, b_bess, lat_NGO, lon_NGO,
                                lat0_NGO, lon0_NGO, scale_NGO, fnorth_NGO, feast_NGO)
     print(f"{x_NGO:.3f}m, {y_NGO:.3f}m, {h_NGO:.3f}m")
+
+
+if __name__ == '__main__':
+    main()  # Call the main function
