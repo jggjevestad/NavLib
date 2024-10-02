@@ -48,9 +48,8 @@ def rad2sc(rad: float) -> float:
 
 
 # Convert from degree, minutes, seconds to degree
-def dms2deg(dms: Tuple[float, float, float]) -> float:
+def dms2deg(d: float, m: float, s: float) -> float:
     """Convert from degree, minutes, seconds to degree"""
-    d, m, s = dms
     return abs(d) + m / 60 + s / 3600
 
 
@@ -64,9 +63,9 @@ def deg2dms(deg: float) -> Tuple[int, int, float]:
 
 
 # Convert from degree, minutes, seconds to radian
-def dms2rad(dms: Tuple[float, float, float]) -> float:
+def dms2rad(d: float, m: float, s:float) -> float:
     """Convert from degree, minutes, seconds to radian"""
-    return deg2rad(dms2deg(dms))
+    return deg2rad(dms2deg(d, m, s))
 
 
 # Convert from radian to degree, minutes, seconds
@@ -78,14 +77,14 @@ def rad2dms(rad: float) -> Tuple[int, int, float]:
 # Example
 def main():
     """Main function to demonstrate DMS to degrees conversion."""
-    dms = (59, 40, 1.10173)
-    print(f"Original DMS: {dms}")
+    d, m, s = (59, 40, 1.10173)
+    print(f"Original DMS: {d}° {m}' {s:.5f}\"")
 
-    deg = dms2deg(dms)
+    deg = dms2deg(d, m, s)
     print(f"Converted to degrees: {deg:.10f}")
 
-    dms_result = deg2dms(deg)
-    print(f"Converted back to DMS: {dms_result}")
+    d, m, s = deg2dms(deg)
+    print(f"Converted back to DMS: {d}° {m}' {s:.5f}\"")
 
 if __name__ == '__main__':
     main()
