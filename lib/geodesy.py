@@ -23,9 +23,9 @@ def Nrad(a, b, lat):
 # Mean radius of curvature
 def Rm(a, b, lat):
     """Calculate mean radius of curvature."""
-    m = Mrad(a, b, lat)
-    n = Nrad(a, b, lat)
-    return sqrt(m * n)
+    M = Mrad(a, b, lat)
+    N = Nrad(a, b, lat)
+    return sqrt(M * N)
 
 
 # Radius of curvature for given azimuth (Euler's equation)

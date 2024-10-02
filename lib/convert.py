@@ -57,13 +57,9 @@ def dms2deg(dms: Tuple[float, float, float]) -> float:
 # Convert from degree to degree, minutes, seconds
 def deg2dms(deg: float) -> Tuple[int, int, float]:
     """Convert from degree to degree, minutes, seconds"""
-    frac = abs(deg - int(deg))
     d = int(fix(deg))
-    dmin = frac * 60
-
-    frac = abs(dmin - int(dmin))
-    m = int(fix(dmin))
-    s = frac * 60
+    m = int(fix(abs(deg - d) * 60))
+    s = (abs(deg - d) * 60 - m) * 60
     return d, m, s
 
 
@@ -81,6 +77,7 @@ def rad2dms(rad: float) -> Tuple[int, int, float]:
 
 # Example
 def main():
+    """Main function to demonstrate DMS to degrees conversion."""
     dms = (59, 40, 1.10173)
     print(f"Original DMS: {dms}")
 
