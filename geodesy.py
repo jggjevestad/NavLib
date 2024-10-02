@@ -376,9 +376,9 @@ def main():
 
     m = (1 + 7.781959e-6)
 
-    rx = dms2rad((0, 0, 2.336248))
-    ry = dms2rad((0, 0, 1.712020))
-    rz = dms2rad((0, 0, -1.169871))
+    rx = dms2rad(0, 0, 2.336248)
+    ry = dms2rad(0, 0, 1.712020)
+    rz = dms2rad(0, 0, -1.169871)
     R = Rx(rx)@Ry(ry)@Rz(rz)
 
     P_EU89 = T + m*R@P_EU89
@@ -390,7 +390,7 @@ def main():
     b_bess = a_bess*(1 - f_bess)
     # TM projection
     lat0_NGO = deg2rad(58)
-    lon0_NGO = dms2rad((10, 43, 22.5))  # axis 3
+    lon0_NGO = dms2rad(10, 43, 22.5)  # axis III
     scale_NGO = 1
     fnorth_NGO = 0
     feast_NGO = 0
