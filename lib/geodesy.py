@@ -63,22 +63,31 @@ def footlat(a, b, x, lat0):
 
 
 # Convert from ECEF coordinates to enu coordinates
-def ECEF2enu(lat0, lon0, dP):
+def ECEF2enu(lat0, lon0, dX, dY, dZ):
     """Convert from ECEF coordinates to ENU coordinates."""
-    dP0 = Ce_g(lat0, lon0) @ dP
+    dP = Ce_g(lat0, lon0) @ array([[dX], 
+                                   [dY], 
+                                   [dZ]])
     
     # Convert from NED to ENU
-    dP[0] = dP0[1]
-    dP[1] = dP0[0]
-    dP[2] = -dP0[2]
-    return dP
+    e = dP[1]
+    n = dP[0]
+    u = -dP[2]
+    return e, n, u
 
 
 # Convert from ECEF coordinates to ned coordinates
-def ECEF2ned(lat0, lon0, dP):
+def ECEF2ned(lat0, lon0, dX, dY, dZ):
     """Convert from ECEF coordinates to NED coordinates."""
-    dP = Ce_g(lat0, lon0) @ dP
-    return dP
+    dP = Ce_g(lat0, lon0) @ array([[dX], 
+                                   [dY], 
+                                   [dZ]])
+    
+    # Convert from ENU to NED
+    n = dP[0]
+    e = dP[1]
+    d = dP[2]
+    return n, e, d
 
 
 # Convert geodetic coordinates to ECEF coordinates
@@ -86,24 +95,19 @@ def geod2ECEF(a, b, lat, lon, h):
     """Convert geodetic coordinates to ECEF coordinates."""
     N = Nrad(a, b, lat)
     
-    P = array([[(N + h) * cos(lat) * cos(lon)],
-               [(N + h) * cos(lat) * sin(lon)],
-               [((b**2/a**2) * N + h) * sin(lat)]])
-    return P
+    X = (N + h) * cos(lat) * cos(lon)
+    Y = (N + h) * cos(lat) * sin(lon)
+    Z = ((b**2/a**2) * N + h) * sin(lat)
+    return X, Y, Z
 
 
 # Convert ECEF coordinates to geodetic coordinates (iteration)
-def ECEF2geod(a, b, P):
+def ECEF2geod(a, b, X, Y, Z):
     """Convert ECEF coordinates to geodetic coordinates (iteration)."""
-    N = None
-    X = P[0, 0]
-    Y = P[1, 0]
-    Z = P[2, 0]
-
     e2 = (a**2 - b**2) / a**2
 
-    p = sqrt(X**2 + Y**2)
-    lat_new = arctan(Z / p)
+    rho = sqrt(X**2 + Y**2)
+    lat_new = arctan(Z / rho)
 
     epsilon = 1e-10
     lat = 0
@@ -111,11 +115,11 @@ def ECEF2geod(a, b, P):
     while abs(lat_new - lat) > epsilon:
         lat = lat_new
         N = Nrad(a, b, lat)
-        lat_new = arctan(Z / p + N * e2 * sin(lat) / p)
+        lat_new = arctan(Z / rho + N * e2 * sin(lat) / rho)
 
     lat = lat_new
     lon = arctan(Y / X)
-    h = p * cos(lat) + Z * sin(lat) - N * (1 - e2 * sin(lat)**2)
+    h = rho * cos(lat) + Z * sin(lat) - N * (1 - e2 * sin(lat)**2)
 
     return lat, lon, h
 
@@ -136,12 +140,8 @@ def ECEF2geodb(a, b, X, Y, Z):
 
 
 # Convert ECEF coordinates to geodetic coordinates (Vermeille, 2004)
-def ECEF2geodv(a, b, P):
+def ECEF2geodv(a, b, X, Y, Z):
     """Convert ECEF coordinates to geodetic coordinates (Vermeille, 2004)."""
-    X = P[0, 0]
-    Y = P[1, 0]
-    Z = P[2, 0]
-
     e2 = (a**2 - b**2) / a**2
     p = (X**2 + Y**2) / a**2
     q = (1 - e2) / a**2 * Z**2
@@ -350,7 +350,7 @@ def main():
     N_EU89 = 6615663.888  # meter
     E_EU89 = 600113.253   # meter
     h_EU89 = 156.228      # meter
-    print(f"{N_EU89:.3f}m, {E_EU89:.3f}m, {h_EU89:.3f}m")
+    print(f"{N_EU89:.3f} m, {E_EU89:.3f} m, {h_EU89:.3f} m")
 
     # GRS80 ellipsoid
     a_GRS80 = 6378137
@@ -369,10 +369,15 @@ def main():
                                      lat0_EU89, lon0_EU89, scale_EU89, fnorth_EU89, feast_EU89)
     lat = rad2dms(lat_EU89)
     lon = rad2dms(lon_EU89)
-    print(f"{lat[0]:3d}°{lat[1]:02d}'{lat[2]:08.5f}\"N, {lon[0]:3d}°{lon[1]:02d}'{lon[2]:08.5f}\"E, {h_EU89:.3f}m")
+    print(f"{lat[0]:3d}°{lat[1]:02d}'{lat[2]:08.5f}\"N, {lon[0]:3d}°{lon[1]:02d}'{lon[2]:08.5f}\"E, {h_EU89:.3f} m")
 
     # Convert from geodetic to ECEF
-    P_EU89 = geod2ECEF(a_GRS80, b_GRS80, lat_EU89, lon_EU89, h_EU89)
+    X_EU89, Y_EU89, Z_EU89 = geod2ECEF(a_GRS80, b_GRS80, lat_EU89, lon_EU89, h_EU89)
+    print(f"{X_EU89:.3f} m, {Y_EU89:.3f} m, {Z_EU89:.3f} m")
+
+    P_EU89 = array([[X_EU89],
+                    [Y_EU89],
+                    [Z_EU89]])
 
     # Parameters 7-parameter transformation (NMBU campus)
     T = array([[-313.368],
@@ -386,7 +391,10 @@ def main():
     rz = dms2rad((0, 0, -1.169871))
     R = Rx(rx)@Ry(ry)@Rz(rz)
 
-    P_NGO = T + m*R@P_EU89
+    P_EU89 = T + m*R@P_EU89
+    X_EU89 = P_EU89[0, 0]
+    Y_EU89 = P_EU89[1, 0]
+    Z_EU89 = P_EU89[2, 0]
 
     # Modified Bessel ellipsoid
     a_bess = 6377492.0176
@@ -400,15 +408,15 @@ def main():
     feast_NGO = 0
 
     # Convert from ECEF to geodetic
-    lat_NGO, lon_NGO, h_NGO = ECEF2geod(a_bess, b_bess, P_NGO)
+    lat_NGO, lon_NGO, h_NGO = ECEF2geod(a_bess, b_bess, X_EU89, Y_EU89, Z_EU89)
     lat = rad2dms(lat_NGO)
     lon = rad2dms(lon_NGO)
-    print(f"{lat[0]:3d}°{lat[1]:02d}'{lat[2]:08.5f}\"N, {lon[0]:3d}°{lon[1]:02d}'{lon[2]:08.5f}\"E, {h_NGO:.3f}m")
+    print(f"{lat[0]:3d}°{lat[1]:02d}'{lat[2]:08.5f}\"N, {lon[0]:3d}°{lon[1]:02d}'{lon[2]:08.5f}\"E, {h_NGO:.3f} m")
 
     # Convert from geodetic to projection (NGO48)
     x_NGO, y_NGO = geod2TMgrid(a_bess, b_bess, lat_NGO, lon_NGO,
                                lat0_NGO, lon0_NGO, scale_NGO, fnorth_NGO, feast_NGO)
-    print(f"{x_NGO:.3f}m, {y_NGO:.3f}m, {h_NGO:.3f}m")
+    print(f"{x_NGO:.3f} m, {y_NGO:.3f} m, {h_NGO:.3f} m")
 
 
 if __name__ == '__main__':

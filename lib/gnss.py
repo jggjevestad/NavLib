@@ -63,9 +63,7 @@ def satpos(ttr, toe, ROOTa, DELTAn, M0, e, omega, Cus, Cuc, Crs, Crc, Cis, Cic, 
     return Xs0
 
 
-# Example
-if __name__ == '__main__':
-
+def main():
     # Import libraries
     from numpy.linalg import norm
     from constants import c
@@ -114,10 +112,15 @@ if __name__ == '__main__':
         sd_new = norm(Xs - Xr) / c
 
     # Estimate of signal delay [ms]
-    print(norm(Xs - Xr) / c * 1e3)
+    print(f"Estimated signal delay: {norm(Xs - Xr) / c * 1e3:.3f} ms")
 
     # Corrected satellite ECEF position @ 02:15:34 [m]
-    print(Xs)
+    print(f"Corrected satellite ECEF position: {Xs[0][0]:.3f} m, {Xs[1][0]:.3f} m, {Xs[2][0]:.3f} m")
 
     # Change in satellite position due to earth rotation [m]
-    print(norm(Xs - Xs0))
+    print(f"Change in satellite position due to earth rotation: {norm(Xs - Xs0):.3f} m")
+
+
+# Example
+if __name__ == '__main__':
+    main()
