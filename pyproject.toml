@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "navlib"
+version = "0.1.0"
+authors = [
+    { name = "Jon Glenn Gjevestad" },
+]
+description = "Navigation library for geodesy calculations"
+# readme = "README.md"
+requires-python = ">=3.7"
+dependencies = [
+    # Add your dependencies here, for example:
+    # "numpy>=1.20.0",
+]
+
+#[project.urls]
+#"Homepage" = "https://github.com/yourusername/navlib"  # Optional
+
+[tool.hatch.build.targets.wheel]
+packages = ["navlib"]

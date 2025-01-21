@@ -1,7 +1,7 @@
 # Import libraries
-from numpy import array, pi, sin, arcsin, cos, tan, arctan, sqrt
-from convert import arctanc
-from rotation import Ce_g, ned2enu
+from numpy import array, diag, zeros, pi, sin, arcsin, cos, tan, arctan, sqrt
+from navlib.convert import arctanc
+from navlib.rotation import Ce_g, ned2enu
 
 
 # Meridional radius of curvature
@@ -74,9 +74,9 @@ def ECEF2ned(lat0, lon0, dX, dY, dZ):
 # Convert from ECEF coordinates to enu coordinates
 def ECEF2enu(lat0, lon0, dX, dY, dZ):
     """Convert from ECEF coordinates to ENU coordinates."""
-    dP = ned2enu @ Ce_g(lat0, lon0) @ array([[dX], 
-                                             [dY], 
-                                             [dZ]])
+    dP =  ned2enu @ Ce_g(lat0, lon0) @ array([[dX], 
+                                              [dY], 
+                                              [dZ]])
     return dP.flatten()
 
 
@@ -330,11 +330,35 @@ def TMconv(a, b, x, y, lat0):
     return gamma
 
 
+# Standard deviation and correlation to covariance matrix
+def std2cov(std_corr: tuple[float, float, float, float, float, float]) -> array:
+    """Convert standard deviation and correlation to covariance matrix."""
+    std = std_corr[:3]
+    corr = std_corr[3:]
+
+    C = array([[std[0]**2, std[0]*std[1]*corr[0], std[0]*std[2]*corr[1]],
+               [std[1]*std[0]*corr[0], std[1]**2, std[1]*std[2]*corr[2]],
+               [std[2]*std[0]*corr[1], std[2]*std[1]*corr[2], std[2]**2]])
+
+    return C
+
+
+# Covariance matrix to standard deviation and correlation
+def cov2std(C: array) -> tuple[float, float, float, float, float, float]:
+    """Convert covariance matrix to standard deviation and correlation."""
+    std = sqrt(diag(C))
+    corr = zeros((3,3))
+    for i in range(3):
+        for j in range(3):
+            corr[i, j] = C[i, j]/(std[i]*std[j])
+    return (std[0], std[1], std[2], corr[0, 1], corr[0, 2], corr[1, 2])
+
+
 # Example
 def main():
     # Import libraries
-    from convert import deg2rad, rad2dms, dms2rad
-    from rotation import Rx, Ry, Rz
+    from navlib.convert import deg2rad, rad2dms, dms2rad
+    from navlib.rotation import Rx, Ry, Rz
 
     # Given coordinates EU89
     N_EU89 = 6615663.888  # meter
