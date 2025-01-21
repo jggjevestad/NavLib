@@ -22,7 +22,7 @@ def satpos(ttr, toe, ROOTa, DELTAn, M0, e, omega, Cus, Cuc, Crs, Crc, Cis, Cic, 
     n0 = sqrt(GM / a**3)  # Mean angular velocity [rad/sec]
     t = dt(ttr, toe)      # Time from reference epoch [s]
     n = n0 + DELTAn       # Corrected mean motion [rad/s]
-    M = M0 + n * t          # Mean anomaly [rad]
+    M = M0 + n * t        # Mean anomaly [rad]
 
     # Kepler's equation
     epsilon = 1e-10
