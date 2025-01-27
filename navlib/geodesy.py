@@ -315,17 +315,30 @@ def TMcorr(a, b, x1, y1, x2, y2, lat0):
     return daz, ds
 
 
-# Transversal Mercator meridian convergence
-def TMconv(a, b, x, y, lat0):
+# Transversal Mercator meridian convergence (lat, lon)
+def TMconv1(a, b, lat, lon, lon0):
+    """Calculate Transversal Mercator meridian convergence."""
+    l = lon - lon0
+    e2 = (a**2 - b**2) / a**2
+    eps2 = e2 / (1 - e2) * cos(lat)**2
+
+    gamma = l * sin(lat) \
+            + l**3/3 * sin(lat)*cos(lat)**2 * (1 + 3 * eps2 + 2 * eps2**2)
+    
+    return gamma
+
+
+# Transversal Mercator meridian convergence (x, y)
+def TMconv2(a, b, x, y, lat0):
     """Calculate Transversal Mercator meridian convergence."""
     latf = footlat(a, b, x, lat0)
 
     e2 = (a**2 - b**2) / a**2
     Nf = Nrad(a, b, latf)
-    ef2 = e2 / (1 - e2) * cos(latf)**2
+    epsf2 = e2 / (1 - e2) * cos(latf)**2
 
     gamma = y * tan(latf) / Nf \
-            - y**3 * tan(latf) / (3 * Nf**3) * (1 + tan(latf)**2 - ef2 - 2 * ef2**2)
+            - y**3 * tan(latf) / (3 * Nf**3) * (1 + tan(latf)**2 - epsf2 - 2 * epsf2**2)
 
     return gamma
 
