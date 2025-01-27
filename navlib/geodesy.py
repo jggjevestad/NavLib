@@ -323,7 +323,8 @@ def TMconv1(a, b, lat, lon, lon0):
     eps2 = e2 / (1 - e2) * cos(lat)**2
 
     gamma = l * sin(lat) \
-            + l**3/3 * sin(lat)*cos(lat)**2 * (1 + 3 * eps2 + 2 * eps2**2)
+            + l**3/3 * sin(lat)*cos(lat)**2 * (1 + 3 * eps2 + 2 * eps2**2) \
+            + l**5/15 * sin(lat)*cos(lat)**4 * (2 - tan(lat)**2)
     
     return gamma
 
@@ -341,6 +342,32 @@ def TMconv2(a, b, x, y, lat0):
             - y**3 * tan(latf) / (3 * Nf**3) * (1 + tan(latf)**2 - epsf2 - 2 * epsf2**2)
 
     return gamma
+
+
+# Transversal Mercator scale factor (lat, lon)
+def TMscale1(a, b, lat, lon, lon0):
+    """Calculate Transversal Mercator scale factor."""
+    l = lon - lon0
+    e2 = (a**2 - b**2) / a**2
+    eps2 = e2 / (1 - e2) * cos(lat)**2
+
+    scale = 1 + l**2/2 * cos(lat)**2 * (1 + eps2) \
+            + l**4/24 * cos(lat)**4 * (5 + 4*tan(lat)**2)
+
+    return scale
+
+
+# Transversal Mercator scale factor (x, y)
+def TMscale2(a, b, x, y, lat0):
+    """Calculate Transversal Mercator scale factor."""
+    latf = footlat(a, b, x, lat0)
+    Nf = Nrad(a, b, latf)
+    Mf = Mrad(a, b, latf)
+
+    scale = 1 + y**2 / (2 * Mf * Nf) \
+            + y**4 / (24 * Nf**4)
+
+    return scale
 
 
 # Standard deviation and correlation to covariance matrix
@@ -370,7 +397,7 @@ def cov2std(C: array) -> tuple[float, float, float, float, float, float]:
 # Example
 def main():
     # Import libraries
-    from navlib.convert import deg2rad, rad2dms, dms2rad
+    from navlib.convert import deg2rad, rad2dms, dms2rad, rad2grad
     from navlib.rotation import Rx, Ry, Rz
 
     # Given coordinates EU89
@@ -438,11 +465,24 @@ def main():
     lon = rad2dms(lon_NGO)
     print(f"{lat[0]:3d}°{lat[1]:02d}'{lat[2]:08.5f}\"N, {lon[0]:3d}°{lon[1]:02d}'{lon[2]:08.5f}\"E, {h_NGO:.3f} m")
 
+    # Compute convergence of meridian (lat, lon)
+    gamma = TMconv1(a_bess, b_bess, lat_NGO, lon_NGO, lon0_NGO)
+
+    # Compute scale factor (lat, lon)
+    scale = TMscale1(a_bess, b_bess, lat_NGO, lon_NGO, lon0_NGO)
+    print(f"gamma: {rad2grad(gamma):.5f} gon, scale: {scale:.5f}")
+
     # Convert from geodetic to projection (NGO48)
     x_NGO, y_NGO = geod2TMgrid(a_bess, b_bess, lat_NGO, lon_NGO,
                                lat0_NGO, lon0_NGO, scale_NGO, fnorth_NGO, feast_NGO)
     print(f"{x_NGO:.3f} m, {y_NGO:.3f} m, {h_NGO:.3f} m")
 
+    # Compute convergence of meridian (x, y)
+    gamma = TMconv2(a_bess, b_bess, x_NGO, y_NGO, lat_NGO)
+
+    # Compute scale factor (x, y)
+    scale = TMscale2(a_bess, b_bess, x_NGO, y_NGO, lat0_NGO)
+    print(f"gamma: {rad2grad(gamma):.5f} gon, scale: {scale:.5f}")
 
 if __name__ == '__main__':
     main()  # Call the main function
