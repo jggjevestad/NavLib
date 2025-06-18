@@ -71,12 +71,30 @@ def ECEF2ned(lat0, lon0, dX, dY, dZ):
     return dP.flatten()
 
 
+# Convert from ned to ECEF coordinates
+def ned2ECEF(lat0, lon0, n, e, d):
+    """Convert from NED coordinates to ECEF coordinates."""
+    dP = Ce_g(lat0, lon0).T  @ array([[n], 
+                                      [e], 
+                                      [d]])
+    return dP.flatten()
+
+
 # Convert from ECEF coordinates to enu coordinates
 def ECEF2enu(lat0, lon0, dX, dY, dZ):
     """Convert from ECEF coordinates to ENU coordinates."""
     dP =  ned2enu @ Ce_g(lat0, lon0) @ array([[dX], 
                                               [dY], 
                                               [dZ]])
+    return dP.flatten()
+
+
+# Convert from enu to ECEF coordinates
+def enu2ECEF(lat0, lon0, e, n, u):
+    """Convert from ENU coordinates to ECEF coordinates."""
+    dP =  Ce_g(lat0, lon0).T @ ned2enu @ array([[e], 
+                                                [n], 
+                                                [u]])
     return dP.flatten()
 
 
