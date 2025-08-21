@@ -1,6 +1,6 @@
 # Import libraries
 from numpy import array, eye, vstack, sin, cos, sqrt, arcsin, arctan2, pi, trace
-from navlib.convert import deg2rad, rad2deg
+from convert import deg2rad, rad2deg
 from numpy.linalg import norm
 
 
