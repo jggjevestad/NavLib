@@ -1,7 +1,7 @@
 # Import libraries
 from numpy import array, diag, zeros, pi, sin, arcsin, cos, tan, arctan, sqrt
-from navlib.convert import arctanc
-from navlib.rotation import Ce_g, ned2enu
+from convert import arctanc
+from rotation import Ce_g, ned2enu
 
 
 # Meridional radius of curvature
