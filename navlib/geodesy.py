@@ -1,7 +1,7 @@
 # Import libraries
 from numpy import array, diag, zeros, pi, sin, arcsin, cos, tan, arctan, sqrt
-from navlib.convert import arctanc
-from navlib.rotation import Ce_g, ned2enu
+from .convert import arctanc
+from .rotation import Ce_g, ned2enu
 
 
 # Meridional radius of curvature
@@ -415,8 +415,8 @@ def cov2std(C: array) -> tuple[float, float, float, float, float, float]:
 # Example
 def main():
     # Import libraries
-    from navlib.convert import deg2rad, rad2dms, dms2rad, rad2grad
-    from navlib.rotation import Rx, Ry, Rz
+    from .convert import deg2rad, rad2dms, dms2rad, rad2grad
+    from .rotation import Rx, Ry, Rz
 
     # Given coordinates EU89
     N_EU89 = 6615663.888  # meter
