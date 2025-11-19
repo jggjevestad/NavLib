@@ -8,7 +8,7 @@ version = "0.1.0"
 authors = [
     { name = "Jon Glenn Gjevestad" },
 ]
-description = "Navigation library for geodesy calculations"
+description = "Navigation library for calculations in geodesy"
 # readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [
@@ -17,7 +17,7 @@ dependencies = [
 ]
 
 #[project.urls]
-#"Homepage" = "https://github.com/yourusername/navlib"  # Optional
+"Homepage" = "https://github.com/jggjevestad/navlib"  # Optional
 
 [tool.hatch.build.targets.wheel]
 packages = ["navlib"]
