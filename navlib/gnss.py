@@ -1,6 +1,6 @@
 # Import libraries
 from numpy import array, sqrt, sin, cos, arctan2
-from constants import GM, OMEGADOTe
+from .constants import GM, OMEGADOTe
 
 
 # Correction for beginning or end of week crossovers in GNSS systems
