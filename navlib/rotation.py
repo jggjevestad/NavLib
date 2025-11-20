@@ -4,7 +4,6 @@ from numpy.linalg import norm
 from .convert import deg2rad, rad2deg
 
 
-
 # Directional Cosine Matrix (DCM)
 # x-axis rotation
 def Rx(rx):
