@@ -1,7 +1,7 @@
 # Import libraries
 from numpy import array, eye, vstack, sin, cos, sqrt, arcsin, arctan2, pi, trace
 from numpy.linalg import norm
-from .convert import deg2rad, rad2deg
+from navlib.convert import deg2rad, rad2deg
 
 
 # Directional Cosine Matrix (DCM)

@@ -1,6 +1,6 @@
 # Import libraries
 from numpy import array, sqrt, sin, cos, arctan2
-from .constants import GM, OMEGADOTe
+from navlib.constants import GM, OMEGADOTe
 
 
 # Correction for beginning or end of week crossovers in GNSS systems
@@ -66,8 +66,8 @@ def satpos(ttr, toe, ROOTa, DELTAn, M0, e, omega, Cus, Cuc, Crs, Crc, Cis, Cic, 
 def main():
     # Import libraries
     from numpy.linalg import norm
-    from .constants import c
-    from .rotation import Rz
+    from navlib.constants import c
+    from navlib.rotation import Rz
 
     # Approximate receiver position [m]
     Xr = array([[3172870.7170],
@@ -103,7 +103,7 @@ def main():
     sd = 0
 
     # Estimate signal travel time due to earth rotation
-    Xs = None
+    Xs = Xs0
     while abs(sd_new - sd) > 1e-10:
         sd = sd_new
         Xs = Rz(-OMEGADOTe * sd) @ Xs0
