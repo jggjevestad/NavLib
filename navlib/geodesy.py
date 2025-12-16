@@ -1,5 +1,6 @@
 # Import libraries
 from numpy import array, diag, zeros, pi, sin, arcsin, cos, tan, arctan, sqrt
+from numpy.typing import NDArray
 from .convert import arctanc
 from .rotation import Ce_g, ned2enu
 
@@ -223,7 +224,9 @@ def geod2(a, b, lat1, lon1, lat2, lon2):
 
     epsilon = 1e-10
     dlon_new = lon2 - lon1
-    dlon = 0
+    dlon = 0.0
+    sigma1 = 0.0
+    sigma2 = 0.0
 
     while abs(dlon_new - dlon) > epsilon:
         dlon = dlon_new
@@ -389,7 +392,7 @@ def TMscale2(a, b, x, y, lat0):
 
 
 # Standard deviation and correlation to covariance matrix
-def std2cov(std_corr: tuple[float, float, float, float, float, float]) -> array:
+def std2cov(std_corr: tuple[float, float, float, float, float, float]) -> NDArray:
     """Convert standard deviation and correlation to covariance matrix."""
     std = std_corr[:3]
     corr = std_corr[3:]
@@ -402,7 +405,7 @@ def std2cov(std_corr: tuple[float, float, float, float, float, float]) -> array:
 
 
 # Covariance matrix to standard deviation and correlation
-def cov2std(C: array) -> tuple[float, float, float, float, float, float]:
+def cov2std(C: NDArray) -> tuple[float, float, float, float, float, float]:
     """Convert covariance matrix to standard deviation and correlation."""
     std = sqrt(diag(C))
     corr = zeros((3,3))
@@ -415,6 +418,8 @@ def cov2std(C: array) -> tuple[float, float, float, float, float, float]:
 # Example
 def main():
     # Import libraries
+    from numpy import array
+    from .geodesy import geod2ECEF, ECEF2geod, geod2TMgrid, TMgrid2geod, TMconv1, TMconv2, TMscale1, TMscale2
     from .convert import deg2rad, rad2dms, dms2rad, rad2grad
     from .rotation import Rx, Ry, Rz
 
