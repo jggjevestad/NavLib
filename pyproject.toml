@@ -8,7 +8,7 @@ version = "0.1.1"
 authors = [
     { name = "Jon Glenn Gjevestad" },
 ]
-description = "Navigation library for calculations in geodesy"
+description = "Library for calculations in navigation and geodesy"
 # readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [
